@@ -1,1 +1,1 @@
-# s3-intelligent-tiering
+# S3 Intelligent Tiering
