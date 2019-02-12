@@ -28,7 +28,7 @@ PARSER.add_argument("-k" "--key", help="Please enter the key of the object", def
 PARSER.add_argument("-p" "--prefix", help="Please enter the prefix of the objects", default='', dest='prefix', type=str)
 PARSER.add_argument("-s" "--suffix", help="Please enter the suffix of the objects", default='', dest='suffix', type=str)
 PARSER.add_argument("-r" "--recursive", help="Please use if all objects with the prefix should be included", dest='recursive', action="store_true")
-PARSER.add_argument("continuation_token", help="Continuation token for paginating results", default='', dest='continuation_token', type=str)
+PARSER.add_argument("continuation_token", help="Continuation token for paginating results", type=str)
 ARGS = PARSER.parse_args()
 
 RECURSIVE = ARGS.recursive
