@@ -24,7 +24,9 @@ import botocore
 
 PARSER = argparse.ArgumentParser()
 PARSER.add_argument("bucket", help="Please enter the name of the S3 bucket", type=str)
-PARSER.add_argument("key", help="Please enter the key (prefix) of the object(s)", type=str)
+PARSER.add_argument("key", help="Please enter the key of the object", type=str)
+PARSER.add_argument("prefix", help="Please enter the prefix of the objects", type=str)
+PARSER.add_argument("suffix", help="Please enter the suffix of the objects", type=str)
 PARSER.add_argument("--recursive", help="Please use if all objects with the prefix should be included", action="store_true")
 ARGS = PARSER.parse_args()
 
@@ -37,12 +39,23 @@ COPY_SOURCE = {
 }
 
 if ARGS.recursive:
-    try:
+    while True:
         RESPONSE = CLIENT.list_objects_v2(Bucket=ARGS.bucket, Prefix=ARGS.key)
-        for obj in RESPONSE[Contents][Key]:
-            print(obj)
-            S3.meta.client.copy(COPY_SOURCE, ARGS.bucket, prefix.get('Prefix'), ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
+        try:
+            CONTENTS = RESPONSE['Contents']
+        except KeyError:
+            print("Key error.")
+        for CONTENT in CONTENTS:
+            KEY = CONTENT['Key']
+            if KEY.startswith(ARGS.prefix) and KEY.endswith(ARGS.suffix):
+                print(CONTENT['Key'])
+        # S3.meta.client.copy(COPY_SOURCE, ARGS.bucket, prefix.get('Prefix'), ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
+        try:
+            ARGS['ContinuationToken'] = RESPONSE['NextContinuationToken']
+        except KeyError:
+            break
+else:
+    try:
+        S3.meta.client.copy(COPY_SOURCE, ARGS.bucket, ARGS.key, ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
     except botocore.exceptions.ClientError:
         print("404 - Sorry, the object you tried cannot be found.")
-else:
-    S3.meta.client.copy(COPY_SOURCE, ARGS.bucket, ARGS.key, ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
