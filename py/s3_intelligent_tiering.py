@@ -24,19 +24,14 @@ import botocore
 
 PARSER = argparse.ArgumentParser()
 PARSER.add_argument("bucket", help="Please enter the name of the S3 bucket", type=str)
-PARSER.add_argument("key", help="Please enter the key of the object", type=str)
-PARSER.add_argument("prefix", help="Please enter the prefix of the objects", type=str)
-PARSER.add_argument("suffix", help="Please enter the suffix of the objects", type=str)
-PARSER.add_argument("--recursive", help="Please use if all objects with the prefix should be included", action="store_true")
+PARSER.add_argument("-k" "--key", help="Please enter the key of the object", type=str)
+PARSER.add_argument("-p" "--prefix", help="Please enter the prefix of the objects", type=str)
+PARSER.add_argument("-s" "--suffix", help="Please enter the suffix of the objects", type=str)
+PARSER.add_argument("-r" "--recursive", help="Please use if all objects with the prefix should be included", action="store_true")
 ARGS = PARSER.parse_args()
 
 CLIENT = boto3.client('s3')
 S3 = boto3.resource('s3')
-
-COPY_SOURCE = {
-    'Bucket': ARGS.bucket,
-    'Key': ARGS.key
-}
 
 if ARGS.recursive:
     while True:
@@ -48,6 +43,10 @@ if ARGS.recursive:
         for CONTENT in CONTENTS:
             KEY = CONTENT['Key']
             if KEY.startswith(ARGS.prefix) and KEY.endswith(ARGS.suffix):
+                COPY_SOURCE = {
+                    'Bucket': ARGS.bucket,
+                    'Key': ARGS.prefix + ARGS.key + ARGS.suffix
+                }
                 print(CONTENT['Key'])
         # S3.meta.client.copy(COPY_SOURCE, ARGS.bucket, prefix.get('Prefix'), ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
         try:
@@ -56,6 +55,10 @@ if ARGS.recursive:
             break
 else:
     try:
+        COPY_SOURCE = {
+            'Bucket': ARGS.bucket,
+            'Key': ARGS.key
+        }
         S3.meta.client.copy(COPY_SOURCE, ARGS.bucket, ARGS.key, ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
     except botocore.exceptions.ClientError:
         print("404 - Sorry, the object you tried cannot be found.")
