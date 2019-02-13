@@ -2,7 +2,7 @@
 
 ## Instructions
 1. Install [Python](https://www.python.org/downloads/)
-2. Install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+2. Install and configure the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 3. Install [boto3](https://pypi.org/project/boto3/) and [botocore](https://pypi.org/project/botocore/)
 4. Download the [S3 Intelligent Tiering Python script](https://github.com/bluecloudreddot/s3-intelligent-tiering/blob/master/py/s3_intelligent_tiering.py)
 5. In Windows:
@@ -10,7 +10,9 @@
     * Navigate to the folder containing the downloaded file by typing 'cd (filepath)' and pressing 'Enter'
     * Run the Python file by typing 'python s3_intelligent_tiering.py' followed by the arguments below. 
 6. In Mac OS X:
-    * Open a Terminal window by...(TBC)
+    * Open a Terminal window by pressing Command + Space, typing 'Terminal' and pressing 'Enter'
+    * Navigate to the folder containing the downloaded file by typing 'cd (filepath)' and pressing 'Enter'
+    * Run the Python file by typing 'python s3_intelligent_tiering.py' followed by the arguments below. 
 7. Arguments:
     * "bucket" - enter the name of the S3 bucket
     * "-k"/"--key" - enter the key of the object
