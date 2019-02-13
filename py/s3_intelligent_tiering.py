@@ -27,7 +27,7 @@ PARSER.add_argument("bucket", help="Please enter the name of the S3 bucket", typ
 PARSER.add_argument("-k" "--key", help="Please enter the key of the object", default='', dest='key', type=str)
 PARSER.add_argument("-p" "--prefix", help="Please enter the prefix of the objects", default='', dest='prefix', type=str)
 PARSER.add_argument("-s" "--suffix", help="Please enter the suffix of the objects", default='', dest='suffix', type=str)
-PARSER.add_argument("-r" "--recursive", help="Please use if all objects with the prefix should be included", dest='recursive', action="store_true")
+PARSER.add_argument("-r" "--recursive", help="Please use if all objects with the prefix/suffix should be included", dest='recursive', action="store_true")
 PARSER.add_argument("-t" "--token", help="Continuation token to list the next set of objects", dest='', type=str)
 ARGS = PARSER.parse_args()
 
