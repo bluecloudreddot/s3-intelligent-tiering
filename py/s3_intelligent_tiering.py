@@ -28,7 +28,7 @@ PARSER.add_argument("-k" "--key", help="Please enter the key of the object", def
 PARSER.add_argument("-p" "--prefix", help="Please enter the prefix of the objects", default='', dest='prefix', type=str)
 PARSER.add_argument("-s" "--suffix", help="Please enter the suffix of the objects", default='', dest='suffix', type=str)
 PARSER.add_argument("-r" "--recursive", help="Please use if all objects with the prefix should be included", dest='recursive', action="store_true")
-PARSER.add_argument("continuation_token", help="Continuation token for paginating results", type=str)
+PARSER.add_argument("-t" "--token", help="Continuation token to list the next set of objects", dest='', type=str)
 ARGS = PARSER.parse_args()
 
 RECURSIVE = ARGS.recursive
@@ -50,9 +50,14 @@ if RECURSIVE:
                     'Bucket': ARGS.bucket,
                     'Key': KEY
                 }
-                if S3.Object(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']).StorageClass != 'INTELLIGENT_TIERING':
-                    S3.meta.client.copy(COPY_SOURCE, COPY_SOURCE['Bucket'], COPY_SOURCE['Key'], ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
-                    print("Changed Storage Class for '{}/{}' to Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
+                try:
+                    if CLIENT.get_object(Bucket=COPY_SOURCE['Bucket'], Key=COPY_SOURCE['Key'])['StorageClass'] == 'INTELLIGENT_TIERING':
+                        print("Storage Class for '{}/{}' is already Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
+                    else:
+                        S3.meta.client.copy(COPY_SOURCE, COPY_SOURCE['Bucket'], COPY_SOURCE['Key'], ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
+                        print("Changed Storage Class for '{}/{}' to Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
+                except AttributeError:
+                    print("Attribute error")
         try:
             ARGS.continuation_token = RESPONSE['NextContinuationToken']
         except KeyError:
@@ -63,7 +68,10 @@ else:
             'Bucket': ARGS.bucket,
             'Key': ARGS.key
         }
-        if S3.Object(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']).StorageClass != 'INTELLIGENT_TIERING':
+
+        if CLIENT.get_object(Bucket=COPY_SOURCE['Bucket'], Key=COPY_SOURCE['Key'])['StorageClass'] == 'INTELLIGENT_TIERING':
+            print("Storage Class for '{}/{}' is already Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
+        else:
             S3.meta.client.copy(COPY_SOURCE, COPY_SOURCE['Bucket'], COPY_SOURCE['Key'], ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
             print("Changed Storage Class for '{}/{}' to Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
     except botocore.exceptions.ClientError:
