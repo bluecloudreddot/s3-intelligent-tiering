@@ -53,9 +53,9 @@ if RECURSIVE:
                 try:
                     if CLIENT.get_object(Bucket=COPY_SOURCE['Bucket'], Key=COPY_SOURCE['Key'])['StorageClass'] == 'INTELLIGENT_TIERING':
                         print("Storage Class for '{}/{}' is already Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
-                    else:
-                        S3.meta.client.copy(COPY_SOURCE, COPY_SOURCE['Bucket'], COPY_SOURCE['Key'], ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
-                        print("Changed Storage Class for '{}/{}' to Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
+                except KeyError:
+                    S3.meta.client.copy(COPY_SOURCE, COPY_SOURCE['Bucket'], COPY_SOURCE['Key'], ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
+                    print("Changed Storage Class for '{}/{}' to Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
                 except AttributeError:
                     print("Attribute error")
         try:
@@ -68,10 +68,10 @@ else:
             'Bucket': ARGS.bucket,
             'Key': ARGS.key
         }
-
-        if CLIENT.get_object(Bucket=COPY_SOURCE['Bucket'], Key=COPY_SOURCE['Key'])['StorageClass'] == 'INTELLIGENT_TIERING':
-            print("Storage Class for '{}/{}' is already Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
-        else:
+        try:
+            if CLIENT.get_object(Bucket=COPY_SOURCE['Bucket'], Key=COPY_SOURCE['Key'])['StorageClass'] == 'INTELLIGENT_TIERING':
+                print("Storage Class for '{}/{}' is already Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
+        except KeyError:
             S3.meta.client.copy(COPY_SOURCE, COPY_SOURCE['Bucket'], COPY_SOURCE['Key'], ExtraArgs={'StorageClass':'INTELLIGENT_TIERING'})
             print("Changed Storage Class for '{}/{}' to Intelligent Tiering".format(COPY_SOURCE['Bucket'], COPY_SOURCE['Key']))
     except botocore.exceptions.ClientError:
